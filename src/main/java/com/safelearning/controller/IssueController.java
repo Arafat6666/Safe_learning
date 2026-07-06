@@ -2,7 +2,6 @@ package com.safelearning.controller;
 
 import com.safelearning.model.IssueReport;
 import com.safelearning.service.IssueService;
-import com.safelearning.strategy.HazardTypePriorityStrategy;
 import com.safelearning.service.ValidationService;
 
 import java.util.List;
