@@ -316,9 +316,7 @@ class SafeLearningTest {
     // =========================================================
 
     @Test
-    @Disabled("Deliberately failing: system does not yet reject duplicate reports. "
-            + "Reveals limitation: identical location+hazardType submissions are accepted "
-            + "without warning. Future fix: add duplicate detection in IssueService.submitReport()")
+
     void submitReport_duplicateReport_shouldRejectSecondSubmission() {
         issueService.submitReport("Room 3", "Broken window near door", "structural", "S1");
 
