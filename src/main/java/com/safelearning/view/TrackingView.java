@@ -90,7 +90,7 @@ public class TrackingView extends JFrame {
 
     private JPanel createTitlePanel() {
 
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(new BorderLayout());
 
         JLabel title = new JLabel("Issue Tracking", SwingConstants.CENTER);
         title.setFont(new Font("Segoe UI", Font.BOLD, 22));

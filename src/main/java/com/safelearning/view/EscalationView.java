@@ -129,11 +129,10 @@ public class EscalationView extends JFrame {
     private JPanel createDetailsPanel() {
 
         JPanel panel = new JPanel(new GridBagLayout());
-
         GridBagConstraints gbc = new GridBagConstraints();
 
-        gbc.insets = new Insets(8,8,8,8);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(6, 8, 6, 8);
+        gbc.anchor = GridBagConstraints.WEST;
 
         // ID
         gbc.gridx = 0;
@@ -146,7 +145,6 @@ public class EscalationView extends JFrame {
         // Reporter
         gbc.gridx = 0;
         gbc.gridy++;
-
         panel.add(new JLabel("Reporter:"), gbc);
 
         gbc.gridx = 1;
@@ -155,7 +153,6 @@ public class EscalationView extends JFrame {
         // Location
         gbc.gridx = 0;
         gbc.gridy++;
-
         panel.add(new JLabel("Location:"), gbc);
 
         gbc.gridx = 1;
@@ -164,12 +161,12 @@ public class EscalationView extends JFrame {
         // Hazard Type
         gbc.gridx = 0;
         gbc.gridy++;
-
         panel.add(new JLabel("Hazard Type:"), gbc);
 
         gbc.gridx = 1;
         panel.add(hazardLabel, gbc);
 
+        // Priority
         gbc.gridx = 0;
         gbc.gridy++;
         panel.add(new JLabel("Priority:"), gbc);
@@ -177,6 +174,7 @@ public class EscalationView extends JFrame {
         gbc.gridx = 1;
         panel.add(priorityLabel, gbc);
 
+        // Status
         gbc.gridx = 0;
         gbc.gridy++;
         panel.add(new JLabel("Status:"), gbc);
@@ -184,25 +182,25 @@ public class EscalationView extends JFrame {
         gbc.gridx = 1;
         panel.add(statusLabel, gbc);
 
-        // Description
+        // Description label
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(14, 8, 4, 8);
         panel.add(new JLabel("Description:"), gbc);
 
-        gbc.gridx = 1;
+        // Description area
+        gbc.gridy++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 0;
-        gbc.weighty = 0;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(0, 8, 8, 8);
 
         JScrollPane scrollPane = new JScrollPane(descriptionArea);
-        scrollPane.setPreferredSize(new Dimension(320, 100));
+        scrollPane.setPreferredSize(new Dimension(480, 120));
 
         panel.add(scrollPane, gbc);
 
         JPanel wrapper = new JPanel(new GridBagLayout());
-
         wrapper.add(panel);
 
         return wrapper;
