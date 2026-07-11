@@ -6,6 +6,7 @@ import com.safelearning.model.MaintenanceStaff;
 import com.safelearning.model.Student;
 import com.safelearning.model.Teacher;
 import com.safelearning.model.User;
+import com.safelearning.service.WeatherApiResponse;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,6 +40,8 @@ public class ReportView extends JFrame {
     private JButton submitButton;
     private JButton clearButton;
     private JButton viewReportsButton;
+    private JLabel weatherConditionLabel;
+    private JLabel weatherMessageLabel;
 
     public ReportView(IssueController controller) {
         this.controller = controller;
@@ -54,6 +57,7 @@ public class ReportView extends JFrame {
         add(createButtonPanel(), BorderLayout.SOUTH);
 
         registerEventHandlers();
+        loadCampusWeather();
         setVisible(true);
     }
 
@@ -67,16 +71,52 @@ public class ReportView extends JFrame {
         descriptionArea.setLineWrap(true);
         descriptionArea.setWrapStyleWord(true);
 
+        weatherConditionLabel = new JLabel("Loading campus weather...");
+        weatherMessageLabel = new JLabel("");
+
+        weatherConditionLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        weatherMessageLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+
+        weatherConditionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        weatherMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         submitButton = new JButton("Submit Report");
         clearButton = new JButton("Clear");
         viewReportsButton = new JButton("View Reports");
     }
 
     private JPanel createTitlePanel() {
+
         JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
         JLabel title = new JLabel("Safe Learning Communities");
         title.setFont(new Font("SansSerif", Font.BOLD, 20));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel weatherCard = new JPanel();
+        weatherCard.setLayout(new BoxLayout(weatherCard, BoxLayout.Y_AXIS));
+
+        weatherCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(190, 190, 190), 1),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)
+        ));
+
+        weatherCard.setMaximumSize(new Dimension(340, 60));
+        weatherCard.setPreferredSize(new Dimension(340, 60));
+        weatherCard.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        weatherCard.add(Box.createVerticalStrut(5));
+        weatherCard.add(weatherConditionLabel);
+        weatherCard.add(weatherMessageLabel);
+        weatherCard.add(Box.createVerticalStrut(5));
+
+        panel.add(Box.createVerticalStrut(10));
         panel.add(title);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(weatherCard);
+        panel.add(Box.createVerticalStrut(10));
+
         return panel;
     }
 
@@ -142,6 +182,36 @@ public class ReportView extends JFrame {
 
     private void openTrackingView() {
         new TrackingView(controller);
+    }
+
+    private void loadCampusWeather() {
+
+        WeatherApiResponse weather = controller.getCampusWeather();
+
+        if (weather.isSuccessful()) {
+
+            weatherConditionLabel.setText(
+                    "Campus Weather: " + weather.getCondition()
+            );
+
+            String message = weather.getMessage();
+
+            int index = message.indexOf("temperature:");
+
+            if (index != -1) {
+                weatherMessageLabel.setText(
+                        "Temperature: " + message.substring(index + 12).trim()
+                );
+            } else {
+                weatherMessageLabel.setText("");
+            }
+
+        } else {
+
+            weatherConditionLabel.setText("Campus Weather Unavailable");
+            weatherMessageLabel.setText(weather.getMessage());
+
+        }
     }
 
     private void clearForm() {
