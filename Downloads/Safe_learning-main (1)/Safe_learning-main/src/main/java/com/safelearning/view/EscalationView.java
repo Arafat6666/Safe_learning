@@ -88,13 +88,12 @@ public class EscalationView extends JFrame {
     }
 
     private void initializeComponents() {
-
         idLabel = new JLabel(report.getId());
         locationLabel = new JLabel(report.getLocation());
         hazardLabel = new JLabel(report.getHazardType());
         priorityLabel = new JLabel(report.getPriority());
         statusLabel = new JLabel(report.getStatus());
-        reporterLabel = new JLabel(report.getReportedBy());
+        reporterLabel = new JLabel(report.getReportedBy().getName());  // ← FIXED (added .getName())
         descriptionArea = new JTextArea(report.getDescription());
         descriptionArea.setEditable(false);
         descriptionArea.setLineWrap(true);
@@ -111,7 +110,6 @@ public class EscalationView extends JFrame {
         priorityLabel.setFont(valueFont);
         statusLabel.setFont(valueFont);
         reporterLabel.setFont(valueFont);
-
     }
 
     private JPanel createTitlePanel() {

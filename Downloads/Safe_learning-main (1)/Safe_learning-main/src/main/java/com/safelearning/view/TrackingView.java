@@ -162,7 +162,7 @@ public class TrackingView extends JFrame {
                 report.getHazardType(),
                 report.getPriority(),
                 report.getStatus(),
-                report.getReportedBy()
+                report.getReportedBy().getName()
         };
     }
 
