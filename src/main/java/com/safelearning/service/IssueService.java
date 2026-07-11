@@ -1,6 +1,7 @@
 package com.safelearning.service;
 
 import com.safelearning.model.IssueReport;
+import com.safelearning.model.User;
 import com.safelearning.observer.IssueObserver;
 import com.safelearning.strategy.PriorityStrategy;
 
@@ -39,8 +40,8 @@ public class IssueService {
             throw new IllegalArgumentException("Priority strategy cannot be null");
         }
         this.priorityStrategy = priorityStrategy;
-        this.reports          = new ArrayList<>();
-        this.observers        = new ArrayList<>();
+        this.reports = new ArrayList<>();
+        this.observers = new ArrayList<>();
     }
 
     /**
@@ -49,16 +50,16 @@ public class IssueService {
      * @param location    the location where the hazard was found
      * @param description detailed description of the hazard
      * @param hazardType  category of the hazard
-     * @param reportedBy  name or ID of the reporter
+     * @param reportedBy  User object of the reporter
      * @return the newly created IssueReport
      * @throws IllegalArgumentException if any required field is blank or null
      */
     public IssueReport submitReport(String location, String description,
-                                    String hazardType, String reportedBy) {
+                                    String hazardType, User reportedBy) {  // ← CHANGED parameter
         validateNotBlank(location, "Location");
         validateNotBlank(description, "Description");
         validateNotBlank(hazardType, "Hazard type");
-        validateNotBlank(reportedBy, "Reporter");
+        validateNotBlank(reportedBy.getName(), "Reporter");  // ← CHANGED to getName()
 
         String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         IssueReport report = new IssueReport(id, location, description,

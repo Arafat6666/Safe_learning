@@ -2,6 +2,7 @@ package com.safelearning.view;
 
 import com.safelearning.controller.IssueController;
 import com.safelearning.model.IssueReport;
+import com.safelearning.model.User;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -155,6 +156,8 @@ public class TrackingView extends JFrame {
     }
 
     private Object[] toTableRow(IssueReport report) {
+        User reporter = report.getReportedBy();
+        String reporterDisplay = reporter.getName() + " (" + reporter.getRole() + ")";
 
         return new Object[]{
                 report.getId(),
@@ -162,7 +165,7 @@ public class TrackingView extends JFrame {
                 report.getHazardType(),
                 report.getPriority(),
                 report.getStatus(),
-                report.getReportedBy()
+                reporterDisplay  // ← Shows "Arafat (STUDENT)"
         };
     }
 
@@ -198,6 +201,7 @@ public class TrackingView extends JFrame {
                 JOptionPane.WARNING_MESSAGE
         );
     }
+
 
     private void openReportDetails(int selectedRow) {
 

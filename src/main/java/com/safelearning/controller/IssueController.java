@@ -1,6 +1,7 @@
 package com.safelearning.controller;
 
 import com.safelearning.model.IssueReport;
+import com.safelearning.model.User;
 import com.safelearning.service.IssueService;
 import com.safelearning.service.ValidationService;
 
@@ -25,7 +26,7 @@ public class IssueController {
     public IssueReport submitReport(String location,
                                     String description,
                                     String hazardType,
-                                    String reportedBy) {
+                                    User reportedBy) {  // ← CHANGED from String to User
 
         validateReportInput(
                 location,
@@ -68,4 +69,3 @@ public class IssueController {
 
     }
 }
-
