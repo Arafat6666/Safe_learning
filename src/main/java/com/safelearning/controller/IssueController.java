@@ -4,12 +4,15 @@ import com.safelearning.model.IssueReport;
 import com.safelearning.model.User;
 import com.safelearning.service.IssueService;
 import com.safelearning.service.ValidationService;
+import com.safelearning.service.WeatherApiClient;
+import com.safelearning.service.WeatherApiResponse;
 
 import java.util.List;
 
 public class IssueController {
     private final IssueService issueService;
     private final ValidationService validationService;
+    private final WeatherApiClient weatherApiClient;
 
     public IssueController(IssueService issueService) {
 
@@ -21,6 +24,7 @@ public class IssueController {
 
         this.issueService = issueService;
         this.validationService = new ValidationService();
+        this.weatherApiClient = new WeatherApiClient();
     }
 
     public IssueReport submitReport(String location,
@@ -67,5 +71,9 @@ public class IssueController {
 
         return issueService.getAllReports().get(index);
 
+    }
+
+    public WeatherApiResponse getCampusWeather() {
+        return weatherApiClient.getWeatherForCampus();
     }
 }
