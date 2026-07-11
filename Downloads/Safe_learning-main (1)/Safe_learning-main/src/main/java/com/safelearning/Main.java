@@ -1,6 +1,8 @@
 package com.safelearning;
 
 import com.safelearning.controller.IssueController;
+import com.safelearning.model.Student;
+import com.safelearning.model.User;
 import com.safelearning.observer.AdminObserver;
 import com.safelearning.observer.MaintenanceObserver;
 import com.safelearning.service.IssueService;
@@ -26,16 +28,5 @@ public class Main {
 
         System.out.println("🏫 Safe Learning Communities System Started!");
         System.out.println("📋 Report a safety hazard through the GUI.");
-        System.out.println("🌤️ Weather API: " + getWeatherStatus());
-    }
-
-    private static String getWeatherStatus() {
-        com.safelearning.service.WeatherApiClient client =
-                new com.safelearning.service.WeatherApiClient();
-        com.safelearning.service.WeatherApiResponse response =
-                client.getWeatherForCampus();
-        return response.isSuccessful() ?
-                "✅ " + response.getMessage() :
-                "⚠️ " + response.getMessage();
     }
 }

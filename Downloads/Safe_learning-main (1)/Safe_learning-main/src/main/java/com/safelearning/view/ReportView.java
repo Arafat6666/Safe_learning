@@ -1,10 +1,11 @@
 package com.safelearning.view;
 
 import com.safelearning.controller.IssueController;
+import com.safelearning.model.Student;  // ← NEW import
+import com.safelearning.model.User;    // ← NEW import
 
 import javax.swing.*;
 import java.awt.*;
-
 
 public class ReportView extends JFrame {
 
@@ -102,7 +103,7 @@ public class ReportView extends JFrame {
 
         GridBagConstraints gbc = new GridBagConstraints();
 
-        gbc.insets = new Insets(8,8,8,8);
+        gbc.insets = new Insets(8, 8, 8, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Reporter
@@ -147,7 +148,7 @@ public class ReportView extends JFrame {
 
     private JPanel createButtonPanel() {
 
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER,15,15));
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
 
         panel.add(submitButton);
         panel.add(clearButton);
@@ -183,11 +184,16 @@ public class ReportView extends JFrame {
     private void submitReport() {
 
         try {
+            // OLD: controller.submitReport(..., getReporterInput());
+            // NEW: Create User object from input
+            String reporterName = getReporterInput();
+            User reporter = new Student("S001", reporterName, reporterName + "@email.com", "S001", "Unknown");
+
             controller.submitReport(
                     getSelectedLocation(),
                     getDescriptionInput(),
                     getSelectedHazardType(),
-                    getReporterInput()
+                    reporter  // ← Passing User object instead of String
             );
 
             showSubmissionSuccess();
