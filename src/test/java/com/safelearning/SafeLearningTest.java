@@ -1,5 +1,6 @@
 package com.safelearning;
 
+import com.safelearning.controller.IssueController;
 import com.safelearning.model.IssueReport;
 import com.safelearning.model.Student;
 import com.safelearning.model.User;
@@ -13,8 +14,10 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Unit test suite for Safe Learning Communities — Section 4.
@@ -352,5 +355,187 @@ class SafeLearningTest {
         // This fails — system currently accepts duplicate reports
         assertThrows(IllegalStateException.class, () ->
                 issueService.submitReport("Room 3", "Broken window near door", "structural", reporter));
+    }
+    // =========================================================
+    // 9. Additional Service Edge Cases
+    // =========================================================
+
+    @Test
+    void submitReport_nullReporter_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                issueService.submitReport("Room 1", "Description", "Fire", null));
+    }
+
+    @Test
+    void submitReport_nullHazardType_throwsIllegalArgumentException() {
+        User reporter = createTestUser("S1");
+        assertThrows(IllegalArgumentException.class, () ->
+                issueService.submitReport("Room 1", "Description", null, reporter));
+    }
+
+    @Test
+    void submitReport_blankHazardType_throwsIllegalArgumentException() {
+        User reporter = createTestUser("S1");
+        assertThrows(IllegalArgumentException.class, () ->
+                issueService.submitReport("Room 1", "Description", "   ", reporter));
+    }
+
+    @Test
+    void submitReport_nullDescription_throwsIllegalArgumentException() {
+        User reporter = createTestUser("S1");
+        assertThrows(IllegalArgumentException.class, () ->
+                issueService.submitReport("Room 1", null, "Fire", reporter));
+    }
+
+    @Test
+    void escalateReport_nullReport_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                issueService.escalateReport(null));
+    }
+
+    @Test
+    void updateStatus_nullStatus_throwsIllegalArgumentException() {
+        User reporter = createTestUser("S1");
+        IssueReport report = issueService.submitReport("Room 1", "Description", "Fire", reporter);
+        assertThrows(IllegalArgumentException.class, () ->
+                issueService.updateStatus(report, null));
+    }
+
+    @Test
+    void getAllReports_returnsUnmodifiableList() {
+        User reporter = createTestUser("S1");
+        issueService.submitReport("Room 1", "Description", "Fire", reporter);
+
+        List<IssueReport> reports = issueService.getAllReports();
+        assertThrows(UnsupportedOperationException.class, () ->
+                reports.add(null));
+    }
+
+    // =========================================================
+    // 10. Observer Edge Cases
+    // =========================================================
+
+    @Test
+    void addObserver_null_shouldNotAdd() {
+        issueService.addObserver(null);
+        assertEquals(0, issueService.getObserverCount());
+    }
+
+    @Test
+    void removeObserver_nonExistent_shouldNotThrow() {
+        assertDoesNotThrow(() -> issueService.removeObserver(adminObserver));
+    }
+
+    // =========================================================
+    // 11. Strategy Edge Cases
+    // =========================================================
+
+    @Test
+    void hazardStrategy_nullReport_throwsException() {
+        HazardTypePriorityStrategy strategy = new HazardTypePriorityStrategy();
+        assertThrows(IllegalArgumentException.class, () ->
+                strategy.determinePriority(null));
+    }
+
+    @Test
+    void locationStrategy_nullReport_throwsException() {
+        LocationBasedPriorityStrategy strategy = new LocationBasedPriorityStrategy();
+        assertThrows(IllegalArgumentException.class, () ->
+                strategy.determinePriority(null));
+    }
+
+    @Test
+    void hazardStrategy_unknownHazard_returnsLow() {
+        HazardTypePriorityStrategy strategy = new HazardTypePriorityStrategy();
+        User reporter = createTestUser("S1");
+        IssueReport report = new IssueReport("001", "Room", "Hazard", "unknown", reporter);
+        assertEquals(IssueReport.PRIORITY_LOW, strategy.determinePriority(report));
+    }
+
+    // =========================================================
+    // 12. Controller Edge Cases
+    // =========================================================
+
+    @Test
+    void controllerConstructor_nullService_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new IssueController(null));
+    }
+
+    @Test
+    void getReport_validIndex_returnsReport() {
+        IssueController controller = new IssueController(issueService);
+        User reporter = createTestUser("S1");
+        IssueReport expected = issueService.submitReport("Room 1", "Description", "Fire", reporter);
+
+        assertEquals(expected, controller.getReport(0));
+    }
+
+    @Test
+    void getReport_invalidIndex_throwsIndexOutOfBoundsException() {
+        IssueController controller = new IssueController(issueService);
+        assertThrows(IndexOutOfBoundsException.class, () ->
+                controller.getReport(0));
+    }
+
+    // =========================================================
+    // 13. Validation Service Edge Cases
+    // =========================================================
+
+    @Test
+    void validateLocation_null_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                validationService.validateLocation(null));
+    }
+
+    @Test
+    void validateHazardType_null_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                validationService.validateHazardType(null));
+    }
+
+    @Test
+    void validateHazardType_blank_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                validationService.validateHazardType("   "));
+    }
+
+    @Test
+    void validateHazardType_valid_returnsTrue() {
+        assertTrue(validationService.validateHazardType("Fire"));
+    }
+
+    @Test
+    void getMaxDescriptionLength_returnsCorrectValue() {
+        assertEquals(500, validationService.getMaxDescriptionLength());
+    }
+
+    @Test
+    void getMinDescriptionLength_returnsCorrectValue() {
+        assertEquals(10, validationService.getMinDescriptionLength());
+    }
+
+    // =========================================================
+    // 14. Observer Getter Tests
+    // =========================================================
+
+    @Test
+    void adminObserver_constructor_setsName() {
+        AdminObserver observer = new AdminObserver("Dr. Smith");
+        assertEquals("Dr. Smith", observer.getAdminName());
+    }
+
+    @Test
+    void maintenanceObserver_constructor_setsName() {
+        MaintenanceObserver observer = new MaintenanceObserver("John");
+        assertEquals("John", observer.getTeamMemberName());
+    }
+
+    @Test
+    void adminObserver_getNotifications_returnsCopy() {
+        AdminObserver observer = new AdminObserver("Dr. Smith");
+        java.util.List<String> notifications = observer.getReceivedNotifications();
+        notifications.add("Hack"); // This shouldn't affect internal list
+        assertEquals(0, observer.getReceivedNotifications().size());
     }
 }
