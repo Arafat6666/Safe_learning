@@ -59,6 +59,9 @@ public class IssueService {
         validateNotBlank(location, "Location");
         validateNotBlank(description, "Description");
         validateNotBlank(hazardType, "Hazard type");
+        if (reportedBy == null) {
+            throw new IllegalArgumentException("Reporter cannot be null");
+        }
         validateNotBlank(reportedBy.getName(), "Reporter");  // ← CHANGED to getName()
 
         String id = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
@@ -84,6 +87,10 @@ public class IssueService {
     public void updateStatus(IssueReport report, String newStatus) {
         if (report == null) {
             throw new IllegalArgumentException("Report cannot be null");
+        }
+
+        if (newStatus == null) {
+            throw new IllegalArgumentException("Status cannot be null");
         }
         if (!VALID_STATUSES.contains(newStatus)) {
             throw new IllegalArgumentException(
